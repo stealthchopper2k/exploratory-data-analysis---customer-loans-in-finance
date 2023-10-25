@@ -16,11 +16,11 @@ def load_credentials():
 
 class RDSDatabaseConnector:
     def __init__(self, cred_dict):
-        self.cred_dict = cred_dict
+        self.__cred_dict = cred_dict
 
-    def initialise_SQL_engine(self):
-        cred = self.cred_dict
-        print("*************************************************************")
+    def __initialise_SQL_engine(self):
+        cred = self.__cred_dict
+        print("***************************")
         print("Attempting to connect to DB")
         engine = create_engine(
             f"{cred['RDS_DBTYPE']}+{cred['RDS_DBAPI']}://{cred['RDS_USER']}:{cred['RDS_PASSWORD']}@{cred['RDS_HOST']}:{cred['RDS_PORT']}/{cred['RDS_DATABASE']}")
@@ -29,22 +29,27 @@ class RDSDatabaseConnector:
         print("Connected Successfully")
         return engine
 
-    def extract_rds_dataframe(self, engine):
-        df = pd.read_sql_table('loan_payments', engine)
+    def extract_rds_dataframe(self, table):
+        engine = self.__initialise_SQL_engine()
+        print(f"Finding SQL table: {table}")
+        df = pd.read_sql_table(table, engine)
         print(df.head())
         return df
 
-    def save_to_csv(self, df, name):
+    @staticmethod
+    def save_to_csv(df, name):
         pwd = os.getcwd()
-        filepath = Path(pwd + f"/dataset/{name}")
+        save_path = pwd + f"/dataset/{name}"
+        print(f"Saving to CSV in dir: {save_path}")
+        filepath = Path(save_path)
         df.to_csv(filepath)
+        print("Completed Save")
 
 
-cred_dict = load_credentials()
-rds_con = RDSDatabaseConnector(cred_dict)
+if __name__ == "__main__":
+    cred_dict = load_credentials()
+    rds_con = RDSDatabaseConnector(cred_dict)
 
-engine = rds_con.initialise_SQL_engine()
+    df = rds_con.extract_rds_dataframe('loan_payments')
 
-df = rds_con.extract_rds_dataframe(engine)
-
-rds_con.save_to_csv(df, "loan_data")
+    RDSDatabaseConnector.save_to_csv(df, "loan_data.csv")
