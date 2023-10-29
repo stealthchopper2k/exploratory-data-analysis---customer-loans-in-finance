@@ -1,3 +1,4 @@
+from numpy import save
 import yaml
 from sqlalchemy import create_engine
 import pandas as pd
@@ -33,7 +34,6 @@ class RDSDatabaseConnector:
         engine = self.__initialise_SQL_engine()
         print(f"Finding SQL table: {table}")
         df = pd.read_sql_table(table, engine)
-        print(df.head())
         return df
 
     @staticmethod
@@ -45,6 +45,19 @@ class RDSDatabaseConnector:
         df.to_csv(filepath)
         print("Completed Save")
 
+    @staticmethod
+    def csv_to_excel(file_name):
+        pwd = os.getcwd()
+
+        root_dataset_dir = pwd + '/dataset/'
+
+        save_path = Path(f"{root_dataset_dir}/{file_name}.xlsx")
+        print(f"Saving to excel in dir: {save_path}")
+
+        read_file = pd.read_csv(pwd + f'/dataset/{file_name}.csv')
+        read_file.to_excel(save_path, 'loan_data', header=True)
+        print(f"Saving Complete")
+
 
 if __name__ == "__main__":
     cred_dict = load_credentials()
@@ -53,3 +66,4 @@ if __name__ == "__main__":
     df = rds_con.extract_rds_dataframe('loan_payments')
 
     RDSDatabaseConnector.save_to_csv(df, "loan_data.csv")
+    RDSDatabaseConnector.csv_to_excel('loan_data')
