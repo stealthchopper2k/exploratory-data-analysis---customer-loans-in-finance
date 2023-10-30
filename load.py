@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-from dateutil.parser import parse
 
 
 def load_data(file_path):

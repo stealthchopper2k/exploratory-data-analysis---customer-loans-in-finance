@@ -1,6 +1,4 @@
 import pandas as pd
-# from dateutil.parser import parse
-import numpy as np
 
 
 class DataTransform:
@@ -35,6 +33,9 @@ class DataTransform:
     def drop_cols(self, cols):
         for col in cols:
             self.df.drop(col, axis=1, inplace=True)
+
+    def round_float(self, col, decimal_places):
+        self.df[col] = self.df[col].apply(lambda x: round(x, decimal_places))
 
     # despite type coercsion we might want to convert explicitly if exporting to excel for cleanliness
     def to_int(self, cols):
@@ -78,10 +79,13 @@ if __name__ == '__main__':
 
     Transformer.drop_cols(drop_cols)
 
-    Transformer.to_int(['mths_since_last_record', 'mths_since_last_major_derog',
-                       'mths_since_last_delinq', 'mths_since_last_record', 'open_accounts', 'total_accounts', 'collections_12_mths_ex_med', 'delinq_2yrs', 'loan_amount'])
+    # we don't convert these cols : 'mths_since_last_record', 'mths_since_last_major_derog' to int since they include 0 months since last to signify recent entry and null for NO entry
+    Transformer.to_int(['open_accounts', 'total_accounts',
+                       'collections_12_mths_ex_med', 'delinq_2yrs', 'loan_amount'])
 
-    # decreases megabytes from 18.2 to 11
+    Transformer.round_float('collection_recovery_fee', 2)
+
+    # decreases megabytes from 18.2 to 9.5
     # would be a lot more impactful in larger datasets
     print(Transformer.df.dtypes)
     print(Transformer.df.info())
