@@ -1,7 +1,7 @@
 import pandas as pd
 from format import DataFormat
 from plotter import Plotter
-from sklearn.impute import KNNImputer
+# from sklearn.impute import KNNImputer
 
 # Missing cols
 # int_rate 9.531449
@@ -10,8 +10,8 @@ from sklearn.impute import KNNImputer
 # mths_since_last_record 88.60
 # next_payment_date 60.13
 # last_payment_date 0.13
-# last_credit_pull_date 0.01
 # mths_since_last_major_derog  86.17
+# last_credit_pull_date 0.01
 
 
 class DataFrameTransform:

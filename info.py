@@ -1,4 +1,3 @@
-import pandas as pd
 from db_utils import load_data
 
 
@@ -39,9 +38,9 @@ if __name__ == '__main__':
     df = load_data("/dataset/formatted_loan_data.csv")
     Info = DataFrameInfo(df)
 
-    # print(Info.extract_statistics(['loan_amount']))
-    # print(Info.distinct_values(['grade']))
-    # print(Info.get_shape())
+    print(Info.extract_statistics(['loan_amount']))
+    print(Info.distinct_values(['grade']))
+    print(Info.get_shape())
     print(Info.percentage_null())
-    # print(Info.describe_columns())
-    # print(Info.extract_statistics(['mths_since_last_major_derog']))
+    print(Info.describe_columns())
+    print(Info.extract_statistics(['mths_since_last_major_derog']))

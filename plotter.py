@@ -3,7 +3,8 @@ import pandas as pd
 from scipy.stats import normaltest
 from matplotlib import pyplot
 from statsmodels.graphics.gofplots import qqplot
-import plotly.express as px
+import seaborn as sns
+import numpy as np
 
 
 class Plotter:
@@ -16,8 +17,13 @@ class Plotter:
         print('Statistics=%.3f, p=%.3f' % (stat, p))
 
     # histogram
-    def histogram(self, col):
-        self.df[col].hist(bins=40)
+    def skewed_cols(self, num_cols):
+        sns.set(font_scale=0.7)
+        f = pd.melt(self.df, value_vars=num_cols)
+        g = sns.FacetGrid(f, col="variable", col_wrap=3,
+                          sharex=False, sharey=False)
+        g = g.map(sns.histplot, "value", kde=True)
+        pyplot.show()
 
     def qq_plot(self, col):
         self.df.sort_values(by=col, ascending=True)
@@ -29,10 +35,16 @@ class Plotter:
         pyplot.show()
 
     def correlated_vars(self, cols):
-        df = self.df[cols]
-        fig = px.imshow(df.corr(),
-                        title="Correlation heatmap of Loan Data")
-        fig.show()
+        corr = self.df[cols].corr()
+        mask = np.zeros_like(corr)
+        mask[np.triu_indices_from(mask)] = True
+
+        cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+        sns.heatmap(corr, mask=mask, square=True, linewidths=5,
+                    annot=False, cmap=cmap)
+
+        pyplot.show()
 
 
 if __name__ == '__main__':
@@ -40,23 +52,18 @@ if __name__ == '__main__':
     plt = Plotter(df)
 
     # int rate has mostly normal distribution
-    plt.agostino_k2_test('int_rate')
-    print(df['int_rate'].median())
-    plt.histogram('int_rate')
-    plt.qq_plot('int_rate')
-
-    # MCAR
-    # 1. mths_since_last_major_derog   86.17 half of the data from vis is MCAR from cutoff point
-    # 2. sub_grade is MCAR
-    # 3. term is MCAR because loans must have terms and also its uncorrelated to other nulls missing vals from first look
-
-    # NMAR
-    # inq_last months
-    # last_payment
-    # collections_12_mths_ex_med
-    # employment length
-    # These values have no entry to signify no record eg. employment length = null because of no employment
+    # plt.agostino_k2_test('int_rate')
+    # print(df['int_rate'].median())
+    # plt.histogram('int_rate')
+    # plt.qq_plot('int_rate')
 
     plt.missing_nulls_vis()
-    # plt.correlated_vars(['mths_since_last_record',
-    #                     'mths_since_last_delinq', 'mths_since_last_major_derog'])
+    # small visible correlation between interest rate, term and loan
+    # there is small correlation between missing numerical cols
+
+    numerical_cols = ['loan_amount',
+                      'funded_amount_inv', 'int_rate', 'instalment', 'dti', 'total_payment', 'total_accounts', 'mths_since_last_major_derog', 'collections_12_mths_ex_med', 'recoveries', 'open_accounts', 'annual_inc']
+
+    plt.correlated_vars(numerical_cols)
+
+    plt.skewed_cols(numerical_cols)
