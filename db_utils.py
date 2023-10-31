@@ -15,6 +15,12 @@ def load_credentials():
             print(e)
 
 
+def load_data(file_path):
+    pwd = os.getcwd()
+    df = pd.read_csv(pwd + file_path)
+    return df
+
+
 class RDSDatabaseConnector:
     def __init__(self, cred_dict):
         self.__cred_dict = cred_dict

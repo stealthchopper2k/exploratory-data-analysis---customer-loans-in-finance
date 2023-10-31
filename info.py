@@ -1,5 +1,5 @@
 import pandas as pd
-import os
+from db_utils import load_data
 
 
 class DataFrameInfo:
@@ -7,7 +7,7 @@ class DataFrameInfo:
         self.df = df
 
     def describe_columns(self):
-        return self.df.describe()
+        return self.df.dtypes
 
     def extract_statistics(self, columns):
         stats = {}
@@ -32,20 +32,16 @@ class DataFrameInfo:
         return self.df.shape
 
     def percentage_null(self):
-        return (self.df.isna().sum() * 100 / len(self.df)).to_frame(name="% Null")
-
-
-def load_data(file_path):
-    pwd = os.getcwd()
-    df = pd.read_csv(pwd + file_path)
-    return df
+        return round((self.df.isna().sum() * 100 / len(self.df)), 2).to_frame(name="% Null")
 
 
 if __name__ == '__main__':
-    df = load_data("/dataset/loan_data.csv")
+    df = load_data("/dataset/formatted_loan_data.csv")
     Info = DataFrameInfo(df)
 
-    print(Info.extract_statistics(['loan_amount']))
-    print(Info.distinct_values(['grade']))
-    print(Info.get_shape())
+    # print(Info.extract_statistics(['loan_amount']))
+    # print(Info.distinct_values(['grade']))
+    # print(Info.get_shape())
     print(Info.percentage_null())
+    # print(Info.describe_columns())
+    # print(Info.extract_statistics(['mths_since_last_major_derog']))
