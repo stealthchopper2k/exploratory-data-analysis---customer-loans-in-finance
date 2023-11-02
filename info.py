@@ -1,4 +1,5 @@
 from db_utils import load_data
+from tabulate import tabulate
 
 
 class DataFrameInfo:
@@ -19,6 +20,15 @@ class DataFrameInfo:
             }
         return stats
 
+    def skew_data(self, cols):
+        skew_data = []
+        for col in cols:
+            skew_value = self.df[col].skew()
+            skew_data.append([col, skew_value])
+
+        print(tabulate(skew_data, headers=[
+              "Column", "Skewness"], tablefmt="pretty"))
+
     def distinct_values(self, cols):
         unique_values = {}
         for col in cols:
@@ -27,11 +37,14 @@ class DataFrameInfo:
         return unique_values
 
     def get_shape(self):
-        print("Dataframe Shape: \n")
+        print("Dataframe Shape:")
         return self.df.shape
 
     def percentage_null(self):
-        return round((self.df.isna().sum() * 100 / len(self.df)), 2).to_frame(name="% Null")
+        null_percentages = (self.df.isna().sum() * 100 /
+                            len(self.df)).to_frame(name="% Null")
+        non_zero_null_percentages = null_percentages[null_percentages["% Null"] > 0]
+        return non_zero_null_percentages
 
 
 if __name__ == '__main__':

@@ -30,7 +30,12 @@ class DataFrameTransform:
             self.df[col] = self.df[col].map(
                 lambda x: np.log(x) if x > 0 else 0)
 
-    # def box_cox_transform
+    def box_cox_transform(self, cols):
+        for col in cols:
+            # Adding a small constant (e.g., 0.01) to ensure all values are positive
+            transformed_col = self.df[col] + 0.01
+            a, b = stats.boxcox(transformed_col)
+            self.df[col] = a
 
 
 if __name__ == "__main__":
