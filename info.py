@@ -10,15 +10,9 @@ class DataFrameInfo:
         return self.df.dtypes
 
     def extract_statistics(self, columns):
-        stats = {}
         for col in columns:
             print(f"Statistics for Col :{col}")
-            stats[col] = {
-                "median": self.df[col].median(),
-                "std_dev": self.df[col].std(),
-                "mean": self.df[col].mean()
-            }
-        return stats
+            return self.df[col].describe()
 
     def skew_data(self, cols):
         skew_data = []
