@@ -3,6 +3,7 @@ import pandas as pd
 from scipy.stats import normaltest
 from matplotlib import pyplot
 from statsmodels.graphics.gofplots import qqplot
+import statsmodels.api as sm
 import seaborn as sns
 import numpy as np
 
@@ -17,10 +18,10 @@ class Plotter:
         print('Statistics=%.3f, p=%.3f' % (stat, p))
 
     # histogram
-    def skewed_cols(self, num_cols):
+    def multi_hist_plot(self, num_cols):
         sns.set(font_scale=0.7)
         f = pd.melt(self.df, value_vars=num_cols)
-        g = sns.FacetGrid(f, col="variable", col_wrap=3,
+        g = sns.FacetGrid(f, col="variable", col_wrap=4,
                           sharex=False, sharey=False)
         g = g.map(sns.histplot, "value", kde=True)
         pyplot.show()
@@ -29,6 +30,18 @@ class Plotter:
         self.df.sort_values(by=col, ascending=True)
         qq_plot = qqplot(self.df[col], scale=1, line='q')
         pyplot.show()
+
+    # np.ravel flattens the 2d axis array, meaning that we iterate and plot on x:y axis
+    def multi_qq_plot(self, cols):
+        remainder = 1 if len(cols) % 4 != 0 else 0
+        rows = int(len(cols) / 4 + remainder)
+
+        fig, axes = pyplot.subplots(
+            ncols=4, nrows=rows, sharex=False, figsize=(12, 6))
+        for col, ax in zip(cols, np.ravel(axes)):
+            sm.qqplot(self.df[col], line='s', ax=ax, fit=True)
+            ax.set_title(f'{col} QQ Plot')
+        pyplot.tight_layout()
 
     def missing_nulls_vis(self):
         msno.matrix(self.df)
@@ -66,4 +79,4 @@ if __name__ == '__main__':
 
     plt.correlated_vars(numerical_cols)
 
-    plt.skewed_cols(numerical_cols)
+    plt.multi_hist_plot(numerical_cols)

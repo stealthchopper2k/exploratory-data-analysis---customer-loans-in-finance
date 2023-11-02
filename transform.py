@@ -1,17 +1,9 @@
 import pandas as pd
 from format import DataFormat
 from plotter import Plotter
-# from sklearn.impute import KNNImputer
-
-# Missing cols
-# int_rate 9.531449
-# employment_length 3.91
-# mths_since_last_delinq 57.17
-# mths_since_last_record 88.60
-# next_payment_date 60.13
-# last_payment_date 0.13
-# mths_since_last_major_derog  86.17
-# last_credit_pull_date 0.01
+import seaborn as sns
+import numpy as np
+from scipy import stats
 
 
 class DataFrameTransform:
@@ -32,6 +24,13 @@ class DataFrameTransform:
 
     def drop_null_rows(self, cols):
         self.df.dropna(subset=cols, inplace=True)
+
+    def log_transform(self, cols):
+        for col in cols:
+            self.df[col] = self.df[col].map(
+                lambda x: np.log(x) if x > 0 else 0)
+
+    # def box_cox_transform
 
 
 if __name__ == "__main__":
