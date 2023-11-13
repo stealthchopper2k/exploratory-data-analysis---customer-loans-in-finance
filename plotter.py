@@ -51,15 +51,15 @@ class Plotter:
         corr = self.df[cols].corr()
         mask = np.zeros_like(corr)
         mask[np.triu_indices_from(mask)] = True
+        pyplot.figure(figsize=(10, 8))
 
         cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
         sns.heatmap(corr, mask=mask, square=True, linewidths=5,
                     annot=False, cmap=cmap)
 
+        # Show the plot
         pyplot.show()
-        
-    
 
 
 if __name__ == '__main__':
