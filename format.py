@@ -41,7 +41,7 @@ class DataFormat:
     # despite type coercsion we might want to convert explicitly if exporting to excel for cleanliness
     def to_int(self, cols):
         for col in cols:
-            self.df[col] = self.df[col].fillna(0).astype('int8')
+            self.df[col] = self.df[col].fillna(0).astype('int32')
 
 
 if __name__ == '__main__':
